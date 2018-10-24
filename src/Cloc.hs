@@ -4,6 +4,7 @@ module Cloc
     ) where
 
 import Control.Monad (forM, forM_)
+import Data.Foldable (foldrM)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Pipes
@@ -39,4 +40,7 @@ countLines fp = IO.withFile fp IO.ReadMode $ \h -> do
 run :: [FilePath] -> IO ()
 run files = do
     counts <- forM files countLines
+    let total = totalCount counts
+        totalTxt = "\nTotal Lines: " <> textShow total
     forM_ counts (T.putStrLn . prettyCount)
+    T.putStrLn totalTxt
