@@ -3,6 +3,7 @@ module Cloc
     ( run
     ) where
 
+import Control.Monad (forM, forM_)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Pipes
@@ -35,7 +36,7 @@ countLines fp = IO.withFile fp IO.ReadMode $ \h -> do
     lineCount <- P.length lines
     return (CountElement fp lineCount)
 
-run :: FilePath -> IO ()
-run fp = do
-    ce <- countLines fp
-    T.putStrLn $ prettyCount ce
+run :: [FilePath] -> IO ()
+run files = do
+    counts <- forM files countLines
+    forM_ counts (T.putStrLn . prettyCount)
