@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import Cloc (run)
 
 main :: IO ()
-main = someFunc
+main = run "src/Lib.hs"
