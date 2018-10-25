@@ -18,7 +18,10 @@ textShow :: Show s => s -> T.Text
 textShow = T.pack . show
 
 -- | Represents a counted file along with filepath and line count
-data CountElement = CountElement FilePath Int
+data CountElement = CountElement 
+    { file :: FilePath
+    , codeLines :: Int
+    }
 
 
 totalCount :: [CountElement] -> Int
@@ -31,9 +34,12 @@ prettyCount (CountElement fp i)  =
     T.pack fp <> ": " <> textShow i <> " lines"
 
 
+isComment :: T.Text -> Bool
+isComment = not . T.isPrefixOf "--"
+
 countLines :: FilePath -> IO CountElement
 countLines fp = IO.withFile fp IO.ReadMode $ \h -> do
-    let lines = textLines h
+    let lines = textLines h >-> P.filter isComment
     lineCount <- P.length lines
     return (CountElement fp lineCount)
 
